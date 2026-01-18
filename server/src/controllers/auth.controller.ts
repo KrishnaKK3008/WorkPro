@@ -3,6 +3,14 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User";
 import Task from "../models/Task";
+
+const cookieOptions = {
+  httpOnly: true,
+  secure: true,     
+  sameSite: "none" as const, 
+  maxAge: 24 * 60 * 60 * 1000, 
+};
+
 export const registerUser = async (req: Request, res: Response): Promise<any> => {
   try {
     const { name, email, password, role } = req.body;
@@ -25,13 +33,10 @@ export const registerUser = async (req: Request, res: Response): Promise<any> =>
       process.env.JWT_SECRET as string,
       { expiresIn: "1d" }
     );
-    res.cookie("jwt", token, {
-      httpOnly: true, 
-      secure: true, 
-      sameSite: "none",
-      maxAge: 24 * 60 * 60 * 1000,
-    });
-    res.status(201).json({ token, user: { id: user._id, name: user.name, role: user.role } });
+
+    res.cookie("jwt", token, cookieOptions);
+
+    res.status(201).json({ user: { id: user._id, name: user.name, role: user.role } });
   } catch (error) {
     res.status(500).json({ message: "Server Error", error });
   }
@@ -52,17 +57,23 @@ export const loginUser = async (req: Request, res: Response): Promise<any> => {
       { expiresIn: "1d" }
     );
 
-    res.cookie("jwt", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 24 * 60 * 60 * 1000,
-    });
+    res.cookie("jwt", token, cookieOptions);
 
     res.json({ user: { id: user._id, name: user.name, role: user.role } });
   } catch (error) {
     res.status(500).json({ message: "Server Error" });
   }
+};
+
+export const logoutUser = (req: Request, res: Response) => {
+  res.cookie("jwt", "", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    expires: new Date(0),
+  });
+  
+  res.status(200).json({ message: "Logged out successfully" });
 };
 
 export const getAllUsers = async (req: Request, res: Response) => {
@@ -74,16 +85,6 @@ export const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 
-export const logoutUser = (req: Request, res: Response) => {
-  res.cookie("jwt", "", {
-    httpOnly: true,
-    expires: new Date(0),
-    sameSite: "strict",
-  });
-  
-  res.status(200).json({ message: "Logged out successfully" });
-};
-
 export const getWorkforceStats = async (req: Request, res: Response) => {
   try {
     const employees = await User.find({ role: "employee" }).select("name role");
@@ -92,7 +93,7 @@ export const getWorkforceStats = async (req: Request, res: Response) => {
       employees.map(async (emp) => {
         const activeCount = await Task.countDocuments({
           assignee: emp._id,
-          status: { $in: ["TODO", "IN_PROGRESS"] } // Exclude 'DONE'
+          status: { $in: ["TODO", "IN_PROGRESS"] }
         });
 
         return {
