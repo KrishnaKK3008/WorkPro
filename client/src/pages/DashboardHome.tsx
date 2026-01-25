@@ -13,9 +13,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Briefcase, UserCheck, Layers, Search, LayoutGrid } from "lucide-react";
+import { Plus, Briefcase, UserCheck, Layers, Search, LayoutGrid, Video } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
 import TaskDetailSheet from "@/components/TaskDetailSheet";
@@ -58,17 +57,11 @@ export default function DashboardHome() {
 
   const moveTaskMutation = useMutation({
     mutationFn: ({ taskId, status }: any) => api.patch(`/tasks/${taskId}`, { status }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["myTasks"] }),
+    onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["myTasks"] });
+        queryClient.invalidateQueries({ queryKey: ["projects"] });
+    }
   });
-
-  const handleCreateProject = (e: React.FormEvent) => {
-    e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    createProjectMutation.mutate({
-      name: formData.get("name"),
-      description: formData.get("description"),
-    });
-  };
 
   const onDragEnd = (result: any) => {
     if (!result.destination) return;
@@ -86,12 +79,15 @@ export default function DashboardHome() {
     return <div className="p-10 text-center animate-pulse font-black uppercase tracking-widest text-zinc-400">Syncing Workspace...</div>;
   }
   
+  // ==============================
+  // ADMIN VIEW
+  // ==============================
   if (user?.role === "admin") {
     return (
-      <div className="space-y-12 pb-20">
+      <div className="space-y-12">
         <header>
             <h1 className="text-3xl font-black text-zinc-900 tracking-tighter uppercase">Workforce Overview</h1>
-            <p className="text-sm text-zinc-500 font-medium">Real-time team capacity and allocation</p>
+            <p className="text-sm text-zinc-500 font-medium italic">Active team bandwidth monitor</p>
         </header>
 
         <WorkforceStats />
@@ -100,32 +96,26 @@ export default function DashboardHome() {
             <div className="flex justify-between items-center mb-8">
                 <div className="flex items-center gap-2">
                     <LayoutGrid className="h-5 w-5 text-blue-600" />
-                    <h2 className="text-xl font-bold text-zinc-900">Active Projects</h2>
+                    <h2 className="text-xl font-black text-zinc-900 uppercase tracking-tight">Project Sprints</h2>
                 </div>
 
                 <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
                     <DialogTrigger asChild>
-                    <Button className="bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/20 px-6 font-bold uppercase text-[10px] tracking-widest">
+                    <Button className="bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/20 px-6 font-bold uppercase text-[10px] tracking-widest h-11 rounded-xl">
                         <Plus className="mr-2 h-4 w-4" /> New Project
                     </Button>
                     </DialogTrigger>
                     <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle className="font-black uppercase tracking-tight">Launch Project</DialogTitle>
-                    </DialogHeader>
-                    <form onSubmit={handleCreateProject} className="space-y-4 pt-4">
-                        <div className="space-y-1">
-                            <Label className="text-[10px] font-black uppercase text-zinc-400">Name</Label>
+                        <DialogHeader><DialogTitle className="font-black uppercase tracking-tight text-xl">Initiate Project</DialogTitle></DialogHeader>
+                        <form onSubmit={(e) => {
+                            e.preventDefault();
+                            const fd = new FormData(e.currentTarget);
+                            createProjectMutation.mutate({ name: fd.get("name"), description: fd.get("description") });
+                        }} className="space-y-4 pt-4">
                             <Input name="name" placeholder="Project Name" required className="h-12" />
-                        </div>
-                        <div className="space-y-1">
-                            <Label className="text-[10px] font-black uppercase text-zinc-400">Description</Label>
-                            <Textarea name="description" placeholder="Markdown supported..." required className="min-h-[120px]" />
-                        </div>
-                        <Button type="submit" className="w-full bg-zinc-900 h-12 font-bold uppercase tracking-widest" disabled={createProjectMutation.isPending}>
-                            {createProjectMutation.isPending ? "Deploying..." : "Launch Project"}
-                        </Button>
-                    </form>
+                            <Textarea name="description" placeholder="Project Goals (Markdown)..." required className="min-h-[100px]" />
+                            <Button type="submit" className="w-full bg-zinc-900 h-12 font-bold uppercase tracking-widest text-xs">Deploy</Button>
+                        </form>
                     </DialogContent>
                 </Dialog>
             </div>
@@ -133,14 +123,14 @@ export default function DashboardHome() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {projects?.map((p: any) => (
                 <Link key={p._id} to={`/dashboard/project/${p._id}`}>
-                <Card className="group hover:border-blue-500 transition-all cursor-pointer border-zinc-200 shadow-sm bg-white active:scale-[0.98]">
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-lg font-bold flex items-center gap-2">
+                <Card className="group hover:border-blue-500 transition-all cursor-pointer border-zinc-200 shadow-sm bg-white rounded-2xl active:scale-[0.98]">
+                    <CardHeader className="pb-4">
+                        <CardTitle className="text-lg font-black flex items-center gap-2 uppercase tracking-tight leading-none">
                             <Briefcase className="h-4 w-4 text-blue-500" /> {p.name}
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-sm text-zinc-500 line-clamp-2 mb-6 h-10">{p.description}</p>
+                        <p className="text-sm text-zinc-500 line-clamp-2 mb-6 font-medium h-10">{p.description}</p>
                         <div className="flex items-center justify-between pt-4 border-t border-zinc-50">
                             <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Managed By</span>
                             <span className="text-[11px] font-bold text-zinc-700">{p.owner?.name}</span>
@@ -155,6 +145,9 @@ export default function DashboardHome() {
     );
   }
 
+  // ==============================
+  // EMPLOYEE VIEW
+  // ==============================
   const tasksByStatus = {
     TODO: filteredMyTasks?.filter((t: any) => t.status === "TODO") || [],
     IN_PROGRESS: filteredMyTasks?.filter((t: any) => t.status === "IN_PROGRESS") || [],
@@ -166,16 +159,16 @@ export default function DashboardHome() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-black text-zinc-900 uppercase tracking-tighter">My Workspace</h1>
-          <p className="text-sm text-zinc-500 font-medium italic">Active sprint focus board</p>
+          <p className="text-sm text-zinc-500 font-medium italic">Personal focus board</p>
         </div>
         
         <div className="relative w-full md:w-80">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
           <Input 
-            placeholder="Search tasks or projects..." 
+            placeholder="Search tasks..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-white border-zinc-200 rounded-xl h-12 shadow-sm focus-visible:ring-blue-500"
+            className="pl-10 bg-white border-zinc-200 rounded-xl h-12 shadow-sm focus-visible:ring-blue-600"
           />
         </div>
       </div>
@@ -200,12 +193,13 @@ export default function DashboardHome() {
                           <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                             <Sheet>
                                 <SheetTrigger asChild>
-                                    <Card className="bg-white shadow-sm border-zinc-200 hover:shadow-md transition-all group cursor-pointer active:scale-[0.97]">
+                                    <Card className="bg-white shadow-sm border-zinc-200 hover:shadow-md transition-all group cursor-pointer active:scale-[0.97] rounded-2xl">
                                         <CardContent className="p-5 space-y-4">
                                             <div className="flex items-center gap-2 text-[9px] font-black text-blue-600 uppercase tracking-tighter">
                                                 <Layers className="h-3 w-3" /> {task.project?.name}
                                             </div>
                                             <h4 className="font-bold text-sm text-zinc-800 group-hover:text-blue-600 transition-colors line-clamp-2">{task.title}</h4>
+                                            
                                             <div className="pt-3 border-t border-zinc-50 flex items-center justify-between">
                                                 <div className="flex items-center gap-2">
                                                     <div className="h-6 w-6 rounded-full bg-zinc-100 flex items-center justify-center border border-zinc-200">
@@ -216,7 +210,18 @@ export default function DashboardHome() {
                                                         <span className="text-[10px] font-bold text-zinc-700">{task.project?.owner?.name}</span>
                                                     </div>
                                                 </div>
-                                                <div className={`h-2 w-2 rounded-full ${task.priority === 'HIGH' ? 'bg-red-500' : 'bg-green-500'}`} />
+
+                                                {/* 🚩 VIDEO HUDDLE BUTTON */}
+                                                <div className="flex items-center gap-2">
+                                                    <Link 
+                                                        to={`/dashboard/project/${task.project?._id}/huddle`}
+                                                        className="p-2 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all shadow-sm border border-emerald-100"
+                                                        onClick={(e) => e.stopPropagation()} // Prevents opening the Sheet when clicking the Video icon
+                                                    >
+                                                        <Video className="h-3.5 w-3.5" />
+                                                    </Link>
+                                                    <div className={`h-2 w-2 rounded-full ${task.priority === 'HIGH' ? 'bg-red-500' : 'bg-emerald-500'}`} />
+                                                </div>
                                             </div>
                                         </CardContent>
                                     </Card>

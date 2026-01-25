@@ -7,6 +7,7 @@ import Register from "@/pages/Register";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import DashboardHome from "@/pages/DashboardHome"; 
 import ProjectBoard from "@/pages/ProjectBoard";
+import MeetingRoom from "@/pages/MeetingRoom";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated } = useAuthStore();
@@ -24,12 +25,15 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Public Routes */}
         <Route 
           path="/" 
           element={isAuthenticated ? <Navigate to="/dashboard" /> : <Landing />} 
         />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+
+        {/* Dashboard Routes (With Sidebar) */}
         <Route 
           path="/dashboard" 
           element={
@@ -39,9 +43,18 @@ function App() {
           }
         >
           <Route index element={<DashboardHome />} />
-          
           <Route path="project/:projectId" element={<ProjectBoard />} />
         </Route>
+
+        {/* Full Screen Meeting Route (No Sidebar) */}
+        <Route 
+          path="/dashboard/project/:projectId/huddle" 
+          element={
+            <ProtectedRoute>
+              <MeetingRoom />
+            </ProtectedRoute>
+          } 
+        />
 
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

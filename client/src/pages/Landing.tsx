@@ -1,28 +1,28 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Layers, Zap, Users, ShieldCheck, ArrowRight, Github } from "lucide-react";
+import { Layers, Zap, Users, ShieldCheck, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 const features = [
   {
-    icon: <Zap className="h-8 w-8 text-blue-500" />,
+    icon: <Zap className="h-6 w-6 text-blue-500" />,
     title: "Instant Execution",
-    desc: "Experience zero-latency updates with our optimized MERN core. Speed is not a feature; it's our foundation.",
-    accent: "from-blue-600/20 to-transparent"
+    desc: "Zero-latency updates with our optimized MERN core. Speed is our foundation.",
+    accent: "bg-blue-600/20"
   },
   {
-    icon: <Users className="h-8 w-8 text-purple-500" />,
+    icon: <Users className="h-6 w-6 text-purple-500" />,
     title: "Workforce Intelligence",
-    desc: "Advanced role-based analytics that help you distribute workload effectively without human bias.",
-    accent: "from-purple-600/20 to-transparent"
+    desc: "Role-based analytics that help you distribute workload effectively.",
+    accent: "bg-purple-600/20"
   },
   {
-    icon: <ShieldCheck className="h-8 w-8 text-emerald-500" />,
+    icon: <ShieldCheck className="h-6 w-6 text-emerald-500" />,
     title: "Enterprise Shield",
-    desc: "Military-grade HttpOnly authentication combined with strict server-side validation guards.",
-    accent: "from-emerald-600/20 to-transparent"
+    desc: "Military-grade HttpOnly authentication with strict server-side guards.",
+    accent: "bg-emerald-600/20"
   }
 ];
 
@@ -30,145 +30,124 @@ export default function Landing() {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    const timer = setInterval(() => setIndex((prev) => (prev + 1) % features.length), 6000);
+    const timer = setInterval(() => setIndex((prev) => (prev + 1) % features.length), 5000);
     return () => clearInterval(timer);
   }, []);
 
   return (
-    <div className="h-screen w-full bg-[#030303] text-white overflow-hidden relative flex flex-col font-sans">
+    <div className="h-screen w-full bg-[#020202] text-white overflow-hidden relative flex flex-col font-sans selection:bg-blue-500/30">
       
-      {/* --- BACKGROUND ARCHITECTURE --- */}
+      {/* --- BACKGROUND (Blobs + Dots) --- */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        {/* Animated Blobs */}
         <motion.div
-          animate={{ x: [0, 80, 0], y: [0, 40, 0], scale: [1, 1.1, 1] }}
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[-15%] left-[-5%] h-[700px] w-[700px] rounded-full bg-blue-600/[0.08] blur-[140px]"
+          animate={{ x: [0, 50, 0], y: [0, 30, 0], scale: [1, 1.1, 1] }}
+          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+          className="absolute top-[-10%] left-[-5%] h-[500px] w-[500px] rounded-full bg-blue-600/[0.1] blur-[100px]"
         />
         <motion.div
-          animate={{ x: [0, -60, 0], y: [0, -30, 0] }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-[-10%] right-[-5%] h-[600px] w-[600px] rounded-full bg-purple-600/[0.07] blur-[120px]"
+          animate={{ x: [0, -40, 0], y: [0, -20, 0] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+          className="absolute bottom-[-5%] right-[-5%] h-[400px] w-[400px] rounded-full bg-purple-600/[0.08] blur-[90px]"
         />
-        {/* The Dot Grid & Noise */}
-        <div className="absolute inset-0 opacity-[0.15] bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:32px_32px]" />
-        <div className="absolute inset-0 opacity-[0.02] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+        <div className="absolute inset-0 opacity-[0.15] bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px]" />
       </div>
 
-      {/* 1. FLOATING NAVBAR */}
-      <nav className="z-50 pt-6">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="flex h-14 items-center justify-between px-6 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-2xl ring-1 ring-white/5">
-            <div className="flex items-center gap-2.5">
-              <div className="h-7 w-7 rounded-lg bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/40">
-                <Layers className="h-4 w-4 text-white" />
-              </div>
-              <span className="uppercase tracking-[0.4em] text-[10px] font-black bg-gradient-to-r from-white to-zinc-500 bg-clip-text text-transparent">
-                Syncra
-              </span>
+      {/* 1. NAVBAR (Compact) */}
+      <nav className="z-50 pt-4 px-6 shrink-0">
+        <div className="max-w-4xl mx-auto flex h-12 items-center justify-between px-5 rounded-full border border-white/5 bg-white/[0.01] backdrop-blur-xl ring-1 ring-white/5">
+          <div className="flex items-center gap-2.5">
+            <div className="h-6 w-6 rounded bg-blue-600 flex items-center justify-center">
+              <Layers className="h-3.5 w-3.5 text-white" />
             </div>
-            
-            <div className="flex items-center gap-6">
-              <Link to="/login" className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 hover:text-white transition-all">
-                Login
-              </Link>
-              <Link to="/register">
-                <Button className="bg-white text-black hover:bg-zinc-200 h-8 px-5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-transform active:scale-95">
-                  Get Started
-                </Button>
-              </Link>
-            </div>
+            <span className="uppercase tracking-[0.3em] text-[9px] font-black bg-gradient-to-r from-white to-zinc-500 bg-clip-text text-transparent">
+              Nexus
+            </span>
+          </div>
+          <div className="flex items-center gap-5">
+            <Link to="/login" className="text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-500 hover:text-white transition-all">Login</Link>
+            <Link to="/register">
+              <Button className="bg-white text-black hover:bg-zinc-200 h-7 px-4 rounded-full text-[8px] font-black uppercase tracking-widest">Join Now</Button>
+            </Link>
           </div>
         </div>
       </nav>
 
-      {/* 2. HERO SECTION */}
-      <main className="flex-1 flex flex-col justify-center items-center text-center px-6 relative z-10 max-w-5xl mx-auto">
+      {/* 2. HERO SECTION (Tighter spacing) */}
+      <main className="flex-1 flex flex-col justify-center items-center text-center px-6 relative z-10 gap-4">
         <motion.div 
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: -5 }}
           animate={{ opacity: 1, y: 0 }}
-          className="inline-flex items-center rounded-full border border-white/5 bg-white/[0.03] px-4 py-1 text-[9px] font-bold uppercase tracking-[0.3em] text-zinc-400 mb-10 backdrop-blur-md"
+          className="inline-flex items-center rounded-full border border-white/5 bg-white/[0.02] px-3 py-1 text-[8px] font-bold uppercase tracking-[0.3em] text-zinc-400 backdrop-blur-md"
         >
-          <span className="h-1 w-1 rounded-full bg-blue-500 mr-3 shadow-[0_0_8px_#3b82f6]" />
+          <span className="h-1 w-1 rounded-full bg-blue-500 mr-2 shadow-[0_0_8px_#3b82f6]" />
           Infrastructure for Sprint Excellence
         </motion.div>
         
         <motion.h1 
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="text-7xl md:text-8xl font-black tracking-[-0.04em] mb-8 leading-[0.85] bg-gradient-to-b from-white via-zinc-200 to-zinc-500 bg-clip-text text-transparent"
+          className="text-5xl md:text-7xl font-black tracking-[-0.04em] leading-[0.85] bg-gradient-to-b from-white via-zinc-100 to-zinc-500 bg-clip-text text-transparent"
         >
-          Workforce logic <br /> 
-          <span className="text-white">reimagined.</span>
+          Logic-driven <br /> 
+          <span className="text-white">execution.</span>
         </motion.h1>
         
         <motion.p 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="text-sm md:text-base text-zinc-500 mb-12 max-w-md mx-auto font-medium leading-relaxed tracking-tight"
+          transition={{ delay: 0.2 }}
+          className="text-xs md:text-sm text-zinc-500 max-w-sm mx-auto font-medium tracking-tight"
         >
-          The definitive workspace for modern engineering teams. 
-          Unify your tasks, workforce, and history in a single, high-fidelity interface.
+          Consolidate sprints, workforce, and audit trails in a unified interface.
         </motion.p>
         
         <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.5 }}
-          className="flex gap-4"
+          transition={{ delay: 0.3 }}
+          className="mt-2"
         >
           <Link to="/register">
-            <Button size="lg" className="h-14 px-10 text-[10px] font-black uppercase tracking-[0.2em] bg-blue-600 text-white hover:bg-blue-500 transition-all shadow-2xl shadow-blue-600/20 rounded-xl">
-              Create Free Workspace
+            <Button size="lg" className="h-12 px-8 text-[9px] font-black uppercase tracking-[0.2em] bg-blue-600 text-white hover:bg-blue-500 rounded-xl shadow-xl shadow-blue-600/20">
+              Launch Workspace <ArrowRight className="ml-2 h-3.5 w-3.5" />
             </Button>
           </Link>
-          <Button variant="outline" size="lg" className="h-14 px-10 text-[10px] font-black uppercase tracking-[0.2em] border-white/5 bg-white/[0.01] hover:bg-white/[0.04] rounded-xl backdrop-blur-md">
-            Watch Demo
-          </Button>
         </motion.div>
       </main>
 
-      {/* 3. FEATURE CAROUSEL */}
-      <section className="h-[200px] mb-12 relative z-10 flex flex-col items-center justify-center">
-        <div className="w-full max-w-2xl px-8">
+      {/* 3. FEATURE GLASS SLIDER (Reduced height) */}
+      <section className="h-[200px] shrink-0 relative z-10 flex flex-col items-center justify-center mb-4">
+        <div className="w-full max-w-xl px-8 relative">
           <AnimatePresence mode="wait">
             <motion.div
               key={index}
               initial={{ opacity: 0, scale: 0.98, filter: "blur(10px)" }}
               animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
               exit={{ opacity: 0, scale: 1.02, filter: "blur(10px)" }}
-              transition={{ duration: 0.6, ease: "easeInOut" }}
+              transition={{ duration: 0.5 }}
               className="w-full"
             >
-              <div className="relative p-10 rounded-[2.5rem] border border-white/5 bg-gradient-to-br from-white/[0.03] to-transparent backdrop-blur-3xl overflow-hidden flex items-center gap-10">
-                {/* Visual Gradient Background for the Card */}
-                <div className={cn("absolute inset-0 bg-gradient-to-br opacity-40 transition-all duration-1000", features[index].accent)} />
+              <div className="relative p-6 rounded-[2rem] border border-white/5 bg-white/[0.02] backdrop-blur-[30px] overflow-hidden flex items-center gap-6 ring-1 ring-white/5">
+                <div className={cn("absolute inset-0 opacity-10 transition-all duration-700", features[index].accent)} />
                 
-                <div className="h-20 w-20 shrink-0 rounded-3xl bg-white/[0.03] flex items-center justify-center border border-white/10 shadow-2xl">
+                <div className="h-14 w-14 shrink-0 rounded-2xl bg-zinc-900/50 flex items-center justify-center border border-white/5">
                   {features[index].icon}
                 </div>
                 
                 <div className="text-left relative z-10">
-                  <h3 className="text-xl font-black mb-2 tracking-tight text-white uppercase italic">{features[index].title}</h3>
-                  <p className="text-zinc-400 text-xs font-medium leading-relaxed max-w-xs">{features[index].desc}</p>
+                  <h3 className="text-sm font-black mb-1 tracking-tight text-white uppercase italic">{features[index].title}</h3>
+                  <p className="text-zinc-500 text-[10px] leading-relaxed max-w-[200px]">{features[index].desc}</p>
                 </div>
               </div>
             </motion.div>
           </AnimatePresence>
 
-          {/* Minimal Navigation Indicators */}
-          <div className="flex justify-center gap-4 mt-8">
+          <div className="flex justify-center gap-3 mt-6">
             {features.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setIndex(i)}
-                className="group relative h-4 w-4 flex items-center justify-center"
-              >
+              <button key={i} onClick={() => setIndex(i)} className="group py-2">
                 <div className={cn(
-                  "h-[2px] transition-all duration-700 rounded-full",
-                  i === index ? "w-6 bg-blue-500" : "w-2 bg-zinc-800"
+                  "h-[2px] transition-all duration-500 rounded-full",
+                  i === index ? "w-8 bg-blue-500" : "w-2 bg-zinc-800"
                 )} />
               </button>
             ))}
@@ -176,10 +155,10 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* 4. FOOTER */}
-      <footer className="py-8 text-center relative z-10">
-        <p className="text-[8px] font-black uppercase tracking-[0.6em] text-zinc-700">
-          Syncra Engineering Labs © 2026 • Optimized for High-Growth Teams
+      {/* 4. FOOTER (Ultra Minimal) */}
+      <footer className="py-4 text-center shrink-0">
+        <p className="text-[7px] font-bold uppercase tracking-[0.5em] text-zinc-800">
+          Nexus Engineering Labs © 2026
         </p>
       </footer>
 

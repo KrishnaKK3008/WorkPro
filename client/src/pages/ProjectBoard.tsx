@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom"; // Added Link import
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
   DragDropContext, 
@@ -14,7 +14,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Search, History, Layers, CheckSquare } from "lucide-react";
+import { Plus, Search, History, Layers, CheckSquare, Video } from "lucide-react"; // Added Video icon
 import { useState, useMemo } from "react";
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
 import TaskDetailSheet from "@/components/TaskDetailSheet";
@@ -88,7 +88,8 @@ export default function ProjectBoard() {
 
   const onDragEnd = (result: any) => {
     if (!result.destination) return;
-    moveMutation.mutate({ taskId: result.draggableId, status: result.destination.droppableId });
+    const { draggableId, destination } = result;
+    moveMutation.mutate({ taskId: draggableId, status: destination.droppableId });
   };
 
   const handleCreateTask = (e: React.FormEvent) => {
@@ -117,6 +118,13 @@ export default function ProjectBoard() {
         </div>
         
         <div className="flex items-center gap-3">
+            {/* 🚩 HUDDLE BUTTON (NEW) */}
+            <Link to={`/dashboard/project/${projectId}/huddle`}>
+                <Button className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] uppercase tracking-widest h-10 px-4 rounded-xl shadow-lg shadow-emerald-500/20">
+                    <Video className="mr-2 h-4 w-4" /> Start Huddle
+                </Button>
+            </Link>
+
             <Sheet>
                 <SheetTrigger asChild>
                     <Button variant="outline" className="border-zinc-200 hover:bg-zinc-50 font-bold text-[10px] uppercase tracking-widest h-10 px-4 rounded-xl">
@@ -178,7 +186,7 @@ export default function ProjectBoard() {
         </div>
       </div>
 
-      {/* TOOLBAR */}
+      {/* TOOLBAR, SEARCH, FILTERS, AND KANBAN BOARD BELOW REMAINS THE SAME */}
       <div className="flex flex-col md:flex-row gap-4 mb-8 bg-zinc-100/50 p-2 rounded-2xl border border-zinc-200/50 backdrop-blur-md">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
@@ -235,7 +243,7 @@ export default function ProjectBoard() {
                                               
                                               {totalItems > 0 && (
                                                 <div className="mb-6 space-y-1.5">
-                                                  <div className="flex justify-between items-center text-[9px] font-bold text-zinc-400 uppercase">
+                                                  <div className="flex justify-between items-center text-[9px] font-black text-zinc-400 uppercase">
                                                     <span className="flex items-center gap-1"><CheckSquare className="h-3 w-3" /> Sub-tasks</span>
                                                     <span>{completedItems}/{totalItems}</span>
                                                   </div>
